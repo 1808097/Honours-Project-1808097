@@ -6,40 +6,39 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.SearchView;
+import android.widget.TextView;
+
 import java.io.InputStream;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
-    private ImageView iv;
-    private Bitmap bitmap;
+    private TextView tv_change;
+    private TextView tv_submit;
+    private SearchView sv_search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        iv = (ImageView)findViewById(R.id.iv_manga_test);
+        tv_change = (TextView)findViewById(R.id.tv_change);
+        tv_submit = (TextView)findViewById(R.id.tv_submit);
+        sv_search = (SearchView)findViewById(R.id.sv_search);
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try  {
-                    bitmap = BitmapFactory.decodeStream((InputStream)new URL("https://uploads.mangadex.org/data/0ef5fef468663e9aefacc5e3611e8915/d1-9e2d4dc4bc972d1bd3951ece3a24a3ae0afb0c54e253a0ffda875073f3428063.jpg").getContent());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-        try{
-            thread.join();
-        }
-        catch(Exception e){
+        sv_search.setOnQueryTextListener(this);
+    }
 
-        }
-        iv.setImageBitmap(bitmap);
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        tv_change.setText(newText);
+        return true;
+    }
 
-
+    @Override
+    public boolean onQueryTextSubmit(String query){
+        tv_submit.setText(query);
+        return true;
     }
 }

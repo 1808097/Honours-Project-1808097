@@ -6,4 +6,7 @@
 
     <!--Main Activity Values-->
     <string name="tv_read_test">Testing Reading!</string>
+
+    <!--Reading Activity Values-->
+    <string name="tv_test_value">Reading Test!</string>
 </resources>
