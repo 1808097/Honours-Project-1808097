@@ -2,10 +2,13 @@ package com.example.honoursproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -26,11 +29,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnClickListener{
 
     private TextView tv_change;
-    private TextView tv_submit;
+    private Button btn_submit;
     private SearchView sv_search;
+
+    private String MANGA_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +43,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         setContentView(R.layout.activity_main);
 
         tv_change = (TextView)findViewById(R.id.tv_change);
-        tv_submit = (TextView)findViewById(R.id.tv_submit);
-        sv_search = (SearchView)findViewById(R.id.sv_search);
 
+        btn_submit = (Button)findViewById(R.id.btn_submit);
+        btn_submit.setOnClickListener(this);
+        btn_submit.setEnabled(false);
+
+        sv_search = (SearchView)findViewById(R.id.sv_search);
         sv_search.setOnQueryTextListener(this);
     }
 
@@ -70,11 +78,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
                         JSONObject firstManga = data.getJSONObject(0);
 
+                        MANGA_ID = firstManga.getString("id");
+
                         JSONObject attributes = firstManga.getJSONObject("attributes");
 
                         JSONObject title = attributes.getJSONObject("title");
 
-                        tv_submit.setText(title.getString("en"));
+                        btn_submit.setText(title.getString("en"));
 
                     } catch (JSONException e) {
                         Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
@@ -94,6 +104,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(stringRequest);
 
+        btn_submit.setEnabled(true);
+
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(getApplicationContext(), MangaActivity.class);
+        intent.putExtra("MANGA_ID", MANGA_ID);
+        startActivity(intent);
     }
 }
