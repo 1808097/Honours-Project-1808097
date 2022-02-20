@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private SearchView sv_search;
 
     private String MANGA_ID;
+    private String AUTHOR;
+    private String ARTIST;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +85,23 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         MANGA_ID = firstManga.getString("id");
 
                         JSONObject attributes = firstManga.getJSONObject("attributes");
-
                         JSONObject title = attributes.getJSONObject("title");
 
                         btn_submit.setText(title.getString("en"));
+
+                        JSONArray relationships = firstManga.getJSONArray("relationships");
+
+                        for(int i = 0; i < relationships.length(); i++){
+                            JSONObject object = relationships.getJSONObject(i);
+                            Log.d("TESTING", object.getString("type"));
+                            if(object.getString("type").equals("author")){
+                                AUTHOR = object.getString("id");
+                            }
+                            else if(object.getString("type").equals("artist")){
+                                ARTIST = object.getString("id");
+                            }
+
+                        }
 
                     } catch (JSONException e) {
                         Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
@@ -112,7 +129,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(getApplicationContext(), MangaActivity.class);
+        Log.d("TESTING", MANGA_ID);
+        Log.d("TESTING", AUTHOR);
+        Log.d("TESTING", ARTIST);
         intent.putExtra("MANGA_ID", MANGA_ID);
+        intent.putExtra("AUTHOR", AUTHOR);
+        intent.putExtra("ARTIST", ARTIST);
         startActivity(intent);
     }
 }

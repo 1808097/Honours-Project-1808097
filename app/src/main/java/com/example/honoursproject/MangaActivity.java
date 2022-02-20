@@ -33,6 +33,8 @@ import org.json.JSONObject;
 public class MangaActivity extends AppCompatActivity {
 
     private TextView tv_title;
+    private TextView tv_author;
+    private TextView tv_artist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,13 @@ public class MangaActivity extends AppCompatActivity {
         String url = builder.build().toString();
 
         tv_title = (TextView)findViewById(R.id.tv_title);
+        tv_author = (TextView)findViewById(R.id.tv_author);
+        tv_artist = (TextView)findViewById(R.id.tv_artist);
+
         tv_title.setText(launcher.getStringExtra("MANGA_ID"));
+        tv_author.setText(launcher.getStringExtra("AUTHOR"));
+        tv_artist.setText(launcher.getStringExtra("ARTIST"));
+
 
         /*
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
