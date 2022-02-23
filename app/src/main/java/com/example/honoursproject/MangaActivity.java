@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -35,33 +36,30 @@ public class MangaActivity extends AppCompatActivity {
     private TextView tv_title;
     private TextView tv_author;
     private TextView tv_artist;
+    private TextView tv_genres;
+    private TextView tv_chapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manga);
 
-        Intent launcher = getIntent();
-
-        Uri uri = Uri.parse("https://api.mangadex.org/chapter");
-        Uri.Builder builder = uri.buildUpon();
-
-        builder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
-        builder.appendQueryParameter("limit", "100");
-
-        String url = builder.build().toString();
-
         tv_title = (TextView)findViewById(R.id.tv_title);
         tv_author = (TextView)findViewById(R.id.tv_author);
         tv_artist = (TextView)findViewById(R.id.tv_artist);
-
-        tv_title.setText(launcher.getStringExtra("MANGA_ID"));
-        tv_author.setText(launcher.getStringExtra("AUTHOR"));
-        tv_artist.setText(launcher.getStringExtra("ARTIST"));
+        tv_genres = (TextView)findViewById(R.id.tv_genres);
+        tv_chapter = (TextView)findViewById(R.id.tv_chapter);
 
 
-        /*
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        Intent launcher = getIntent();
+
+        Uri uri = Uri.parse("https://api.mangadex.org/manga");
+        Uri.Builder mangaBuilder = uri.buildUpon();
+        mangaBuilder.appendQueryParameter("ids[]", launcher.getStringExtra("MANGA_ID"));
+        String mangaUrl = mangaBuilder.build().toString();
+
+        StringRequest mangaRequest = new StringRequest(Request.Method.GET, mangaUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -70,14 +68,24 @@ public class MangaActivity extends AppCompatActivity {
                             JSONArray data = json.getJSONArray("data");
 
                             JSONObject firstManga = data.getJSONObject(0);
-
-                            MANGA_ID = firstManga.getString("id");
-
                             JSONObject attributes = firstManga.getJSONObject("attributes");
 
                             JSONObject title = attributes.getJSONObject("title");
+                            tv_title.setText(title.getString("en"));
 
-                            btn_submit.setText(title.getString("en"));
+                            JSONArray tags = attributes.getJSONArray("tags");
+
+                            String genres = "";
+                            for(int i = 0; i < tags.length(); i++){
+                                JSONObject object = tags.getJSONObject(i);
+                                JSONObject objectAttributes = object.getJSONObject("attributes");
+                                if(objectAttributes.getString("group").equals("genre")){
+                                    JSONObject name = objectAttributes.getJSONObject("name");
+                                    genres += "(" + name.getString("en") + ")";
+                                }
+                            }
+
+                            tv_genres.setText(genres);
 
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
@@ -89,17 +97,113 @@ public class MangaActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //toast in case API returns nothing. Recommends using another name to find plant
-                        Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Something Went Wrong 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+        uri = Uri.parse("https://api.mangadex.org/chapter");
+        Uri.Builder chapterBuilder = uri.buildUpon();
+        chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
+        String chapterUrl = chapterBuilder.build().toString();
+
+        StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            JSONArray data = json.getJSONArray("data");
+
+                            JSONObject firstchapter = data.getJSONObject(0);
+
+                            JSONObject attributes = firstchapter.getJSONObject("attributes");
+
+                            tv_chapter.setText(attributes.getString("title"));
+
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //toast in case API returns nothing. Recommends using another name to find plant
+                        Toast.makeText(getApplicationContext(), "Something Went Wrong 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+        uri = Uri.parse("https://api.mangadex.org/author/" + launcher.getStringExtra("AUTHOR_ID"));
+        Uri.Builder authorBuilder = uri.buildUpon();
+        String authorUrl = authorBuilder.build().toString();
+
+        StringRequest authorRequest = new StringRequest(Request.Method.GET, authorUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            JSONObject data = json.getJSONObject("data");
+
+                            JSONObject attributes = data.getJSONObject("attributes");
+
+                            tv_author.setText(attributes.getString("name"));
+
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //toast in case API returns nothing. Recommends using another name to find plant
+                        Toast.makeText(getApplicationContext(), "Something Went Wrong 2", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+        uri = Uri.parse("https://api.mangadex.org/author/" + launcher.getStringExtra("ARTIST_ID"));
+        Uri.Builder artistBuilder = uri.buildUpon();
+        String artistUrl = artistBuilder.build().toString();
+
+        StringRequest artistRequest = new StringRequest(Request.Method.GET, artistUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            JSONObject data = json.getJSONObject("data");
+
+                            JSONObject attributes = data.getJSONObject("attributes");
+
+                            tv_artist.setText(attributes.getString("name"));
+
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //toast in case API returns nothing. Recommends using another name to find plant
+                        Toast.makeText(getApplicationContext(), "Something Went Wrong 3", Toast.LENGTH_LONG).show();
                     }
                 });
 
         //send request
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        queue.add(stringRequest);
+        queue.add(mangaRequest);
+        queue.add(chapterRequest);
+        queue.add(authorRequest);
+        queue.add(artistRequest);
 
-        */
     }
-
-
 
 }

@@ -45,20 +45,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/tv_themes"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_author"
         tools:text="genres" />
 
     <TextView
-        android:id="@+id/tv_themes"
+        android:id="@+id/tv_chapter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_genres"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/tv_genres"
-        app:layout_constraintTop_toTopOf="@+id/tv_genres"
-        tools:text="themes" />
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_genres"
+        app:layout_constraintStart_toStartOf="@+id/tv_genres"
+        app:layout_constraintTop_toBottomOf="@+id/tv_genres"
+        tools:text="chapter" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         String url = builder.build().toString();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        StringRequest mangaRequest = new StringRequest(Request.Method.GET, url,
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
                         for(int i = 0; i < relationships.length(); i++){
                             JSONObject object = relationships.getJSONObject(i);
-                            Log.d("TESTING", object.getString("type"));
+
                             if(object.getString("type").equals("author")){
                                 AUTHOR = object.getString("id");
                             }
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         //send request
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        queue.add(stringRequest);
+        queue.add(mangaRequest);
 
         btn_submit.setEnabled(true);
 
@@ -133,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         Log.d("TESTING", AUTHOR);
         Log.d("TESTING", ARTIST);
         intent.putExtra("MANGA_ID", MANGA_ID);
-        intent.putExtra("AUTHOR", AUTHOR);
-        intent.putExtra("ARTIST", ARTIST);
+        intent.putExtra("AUTHOR_ID", AUTHOR);
+        intent.putExtra("ARTIST_ID", ARTIST);
         startActivity(intent);
     }
 }
