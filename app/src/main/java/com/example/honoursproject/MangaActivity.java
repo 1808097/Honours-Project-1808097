@@ -1,6 +1,8 @@
 package com.example.honoursproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.content.Intent;
@@ -39,6 +41,7 @@ public class MangaActivity extends AppCompatActivity {
     private TextView tv_genres;
     private TextView tv_chapter;
 
+    private String CHAPTER_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +54,12 @@ public class MangaActivity extends AppCompatActivity {
         tv_genres = (TextView)findViewById(R.id.tv_genres);
         tv_chapter = (TextView)findViewById(R.id.tv_chapter);
 
-
         Intent launcher = getIntent();
+
+        RecyclerView rv = findViewById(R.id.rv_plant_list);
+        adapter = new PlantListRecyclerViewAdapter(getApplicationContext());
+        rv.setAdapter(adapter);
+        rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         Uri uri = Uri.parse("https://api.mangadex.org/manga");
         Uri.Builder mangaBuilder = uri.buildUpon();
@@ -115,11 +122,23 @@ public class MangaActivity extends AppCompatActivity {
                             JSONObject json = new JSONObject(response);
                             JSONArray data = json.getJSONArray("data");
 
-                            JSONObject firstchapter = data.getJSONObject(0);
+                            final JSONObject firstchapter = data.getJSONObject(0);
 
                             JSONObject attributes = firstchapter.getJSONObject("attributes");
 
                             tv_chapter.setText(attributes.getString("title"));
+
+                            CHAPTER_ID = firstchapter.getString("id");
+
+                            tv_chapter.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(getApplicationContext(), ReadingActivity.class);
+                                    intent.putExtra("CHAPTER_ID", CHAPTER_ID);
+                                    startActivity(intent);
+
+                                }
+                            });
 
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
