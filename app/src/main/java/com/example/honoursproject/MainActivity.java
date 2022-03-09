@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private String AUTHOR;
     private String ARTIST;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

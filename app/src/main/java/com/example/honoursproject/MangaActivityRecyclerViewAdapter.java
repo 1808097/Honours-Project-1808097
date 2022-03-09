@@ -3,122 +3,87 @@ package com.example.honoursproject;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+
 import static android.content.Context.MODE_PRIVATE;
 
-public class MangaActivityRecyclerViewAdapter extends RecyclerView.Adapter<MangaActivityRecyclerViewAdapter.ListPlantViewHolder>{
+public class MangaActivityRecyclerViewAdapter extends RecyclerView.Adapter<MangaActivityRecyclerViewAdapter.MangaActivityViewHolder>{
 
-    public static final String PLANT_ID = "plantId";
+    public static final int CHAPTER_NUMBER_LIMIT = 10;
 
     private Context context;
-    private PlantDatabase database;
-    private Plant plant;
-    private SharedPreferences sharedPreferences;
-
     public static RecyclerView.Adapter adapter;
 
-    public PlantListRecyclerViewAdapter(Context context) {
+    public String[][] chapters;
+
+    public MangaActivityRecyclerViewAdapter(Context context, String[][] chapters) {
         super();
         this.context = context;
-        database = PlantDatabase.getDatabase(context);
+        this.chapters = chapters;
+
         adapter=this;
-        sharedPreferences = context.getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
     }
 
     @NonNull
     @Override
-    public PlantListRecyclerViewAdapter.ListPlantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(this.context).inflate(R.layout.activity_plant_list_recycler_view, parent, false);
-        PlantListRecyclerViewAdapter.ListPlantViewHolder viewHolder = new PlantListRecyclerViewAdapter.ListPlantViewHolder(itemView, this);
+    public MangaActivityRecyclerViewAdapter.MangaActivityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(this.context).inflate(R.layout.activity_manga_recycler_view, parent, false);
+        MangaActivityRecyclerViewAdapter.MangaActivityViewHolder viewHolder = new MangaActivityRecyclerViewAdapter.MangaActivityViewHolder(itemView, this);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PlantListRecyclerViewAdapter.ListPlantViewHolder holder, int position) {
-        plant = database.plantDao().getAllPlants().get(position);
+    public void onBindViewHolder(@NonNull MangaActivityRecyclerViewAdapter.MangaActivityViewHolder holder, final int position) {
+        TextView tv = holder.itemView.findViewById(R.id.tv_chapter_recycler_view);
+        tv.setText(chapters[position][1]);
 
-        //displays plant data
-        TextView tv = holder.itemView.findViewById(R.id.tv_recycler_name);
-        tv.setText(database.plantDao().getAllPlants().get(position).getName());
-
-        tv = holder.itemView.findViewById(R.id.tv_recycler_species);
-        tv.setText(database.plantDao().getAllPlants().get(position).getSpecies());
-
-        tv = holder.itemView.findViewById(R.id.tv_recycler_location);
-        tv.setText(database.plantDao().getAllPlants().get(position).getLocation());
-
-        tv = holder.itemView.findViewById(R.id.tv_recycler_water);
-        //displays amount of water needed if data is present
-        if(plant.getWaterAmountNeeded()==0){
-            tv.setText(context.getString(R.string.tv_recycler_no_water));
-        }
-        //displays different measurement units
-        else if(sharedPreferences.getBoolean(MainActivity.PREFERRED_LIQUID_UNIT, true)){
-            tv.setText(context.getString(R.string.tv_recycler_water, Functions.convertToLiters(plant.getWaterAmountNeeded()), "L"));
-        }
-        else{
-            tv.setText(context.getString(R.string.tv_recycler_water, Functions.convertToPints(plant.getWaterAmountNeeded()), "pt"));
-        }
-
-        tv = holder.itemView.findViewById(R.id.tv_recycler_warning);
-        tv.setText(context.getString(R.string.tv_recycler_warning ,Functions.convertToRemainingTime(database.plantDao().getAllPlants().get(position).getTimeLastWatered().getTime())));
-
-
-        Button button = holder.itemView.findViewById(R.id.btn_change);
-        button.setOnClickListener(new PlantListClickListener(plant, position));
-
-        button = holder.itemView.findViewById(R.id.btn_delete);
-        button.setOnClickListener(new PlantListClickListener(plant, position));
+        Button button = holder.itemView.findViewById(R.id.btn_chapter_recycler_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ReadingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("CHAPTER_ID", chapters[position][0]);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return database.plantDao().getAllPlants().size();
+        return CHAPTER_NUMBER_LIMIT;
     }
 
-    class ListPlantViewHolder extends RecyclerView.ViewHolder {
+    class MangaActivityViewHolder extends RecyclerView.ViewHolder {
         private View itemView;
-        private PlantListRecyclerViewAdapter adapter;
+        private MangaActivityRecyclerViewAdapter adapter;
 
-        public ListPlantViewHolder(@NonNull View itemView, PlantListRecyclerViewAdapter adapter) {
+        public MangaActivityViewHolder(@NonNull View itemView, MangaActivityRecyclerViewAdapter adapter) {
             super(itemView);
             this.itemView = itemView;
             this.adapter = adapter;
-        }
-    }
-
-    class PlantListClickListener implements View.OnClickListener{
-        private Plant plant;
-        private int position;
-        public PlantListClickListener(Plant plant, int position){
-            this.plant=plant;
-            this.position=position;
-        }
-        @Override
-        public void onClick(View v) {
-            if(v.getId()==R.id.btn_change){
-                //creates new create activity to modify plant as user wishes
-                Intent intent = new Intent(context, CreatePlantActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(PLANT_ID, plant.getId());
-                context.startActivity(intent);
-            }
-            else{
-                //removes plant from database, updates recycler list
-                database.plantDao().delete(plant);
-
-                adapter.notifyItemRemoved(position);
-                adapter.notifyItemRangeChanged(position, getItemCount());
-                adapter.notifyDataSetChanged();
-            }
         }
     }
 }

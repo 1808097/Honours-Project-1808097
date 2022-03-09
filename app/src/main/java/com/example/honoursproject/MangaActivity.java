@@ -21,6 +21,7 @@ import android.widget.Toast;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.Map;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -35,13 +36,16 @@ import org.json.JSONObject;
 
 public class MangaActivity extends AppCompatActivity {
 
+    public static final int CHAPTER_NUMBER_LIMIT = 10;
+
     private TextView tv_title;
     private TextView tv_author;
     private TextView tv_artist;
     private TextView tv_genres;
-    private TextView tv_chapter;
 
-    private String CHAPTER_ID;
+    private MangaActivityRecyclerViewAdapter adapter;
+
+    private String[][] chapters = new String[CHAPTER_NUMBER_LIMIT][];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +56,8 @@ public class MangaActivity extends AppCompatActivity {
         tv_author = (TextView)findViewById(R.id.tv_author);
         tv_artist = (TextView)findViewById(R.id.tv_artist);
         tv_genres = (TextView)findViewById(R.id.tv_genres);
-        tv_chapter = (TextView)findViewById(R.id.tv_chapter);
 
         Intent launcher = getIntent();
-
-        RecyclerView rv = findViewById(R.id.rv_plant_list);
-        adapter = new PlantListRecyclerViewAdapter(getApplicationContext());
-        rv.setAdapter(adapter);
-        rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         Uri uri = Uri.parse("https://api.mangadex.org/manga");
         Uri.Builder mangaBuilder = uri.buildUpon();
@@ -93,52 +91,6 @@ public class MangaActivity extends AppCompatActivity {
                             }
 
                             tv_genres.setText(genres);
-
-                        } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //toast in case API returns nothing. Recommends using another name to find plant
-                        Toast.makeText(getApplicationContext(), "Something Went Wrong 1", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-
-        uri = Uri.parse("https://api.mangadex.org/chapter");
-        Uri.Builder chapterBuilder = uri.buildUpon();
-        chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
-        String chapterUrl = chapterBuilder.build().toString();
-
-        StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject json = new JSONObject(response);
-                            JSONArray data = json.getJSONArray("data");
-
-                            final JSONObject firstchapter = data.getJSONObject(0);
-
-                            JSONObject attributes = firstchapter.getJSONObject("attributes");
-
-                            tv_chapter.setText(attributes.getString("title"));
-
-                            CHAPTER_ID = firstchapter.getString("id");
-
-                            tv_chapter.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(getApplicationContext(), ReadingActivity.class);
-                                    intent.putExtra("CHAPTER_ID", CHAPTER_ID);
-                                    startActivity(intent);
-
-                                }
-                            });
 
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
@@ -216,13 +168,52 @@ public class MangaActivity extends AppCompatActivity {
                     }
                 });
 
+        uri = Uri.parse("https://api.mangadex.org/chapter");
+        Uri.Builder chapterBuilder = uri.buildUpon();
+        chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
+        chapterBuilder.appendQueryParameter("limit", Integer.toString(CHAPTER_NUMBER_LIMIT));
+        String chapterUrl = chapterBuilder.build().toString();
+
+        StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            JSONArray data = json.getJSONArray("data");
+
+                            for(int i = 0; i < data.length(); i++){
+                                JSONObject chapter = data.getJSONObject(i);
+                                JSONObject attributes = chapter.getJSONObject("attributes");
+
+                                chapters[i] = new String[]{chapter.getString("id"), attributes.getString("title")};
+                            }
+
+                            RecyclerView rv = findViewById(R.id.rv_chapter_list);
+                            adapter = new MangaActivityRecyclerViewAdapter(getApplicationContext(), chapters);
+                            rv.setAdapter(adapter);
+                            rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //toast in case API returns nothing. Recommends using another name to find plant
+                        Toast.makeText(getApplicationContext(), "Something Went Wrong 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+
         //send request
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(mangaRequest);
-        queue.add(chapterRequest);
         queue.add(authorRequest);
         queue.add(artistRequest);
-
+        queue.add(chapterRequest);
     }
 
 }
