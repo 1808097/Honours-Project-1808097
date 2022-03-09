@@ -30,23 +30,23 @@
         android:id="@+id/btn_goto_left_page"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="@string/btn_goto_left_page"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_goto_right_page"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/iv_manga_test" />
+        app:layout_constraintTop_toTopOf="@+id/iv_manga_test"
+        tools:text="Button" />
 
     <Button
         android:id="@+id/btn_goto_right_page"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="@string/btn_goto_right_page"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btn_goto_left_page"
-        app:layout_constraintTop_toTopOf="@+id/iv_manga_test" />
+        app:layout_constraintTop_toTopOf="@+id/iv_manga_test"
+        tools:text="Button" />
 </androidx.constraintlayout.widget.ConstraintLayout>

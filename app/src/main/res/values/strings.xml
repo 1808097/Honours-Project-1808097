@@ -7,11 +7,10 @@
     <!--Main Activity Values-->
     <string name="tv_read_test">Testing Reading!</string>
 
+    <!--Manga Activity Values-->
+    <string name="btn_chapter_recycler_button">Read</string>
+
     <!--Reading Activity Values-->
     <string name="tv_test_value">Reading Test!</string>
-
-    <!---->
-    <string name="btn_goto_left_page">-</string>
-    <string name="btn_goto_right_page">+</string>
 
 </resources>

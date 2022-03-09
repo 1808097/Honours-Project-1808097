@@ -56,19 +56,25 @@ public class MangaActivityRecyclerViewAdapter extends RecyclerView.Adapter<Manga
 
     @Override
     public void onBindViewHolder(@NonNull MangaActivityRecyclerViewAdapter.MangaActivityViewHolder holder, final int position) {
-        TextView tv = holder.itemView.findViewById(R.id.tv_chapter_recycler_view);
-        tv.setText(chapters[position][1]);
+        if(chapters[position]==null){
 
-        Button button = holder.itemView.findViewById(R.id.btn_chapter_recycler_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, ReadingActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("CHAPTER_ID", chapters[position][0]);
-                context.startActivity(intent);
-            }
-        });
+        }
+        else{
+            TextView tv = holder.itemView.findViewById(R.id.tv_chapter_recycler_view);
+            tv.setText(chapters[position][1]);
+
+            Button button = holder.itemView.findViewById(R.id.btn_chapter_recycler_button);
+            button.setVisibility(View.VISIBLE);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ReadingActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("CHAPTER_ID", chapters[position][0]);
+                    context.startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override

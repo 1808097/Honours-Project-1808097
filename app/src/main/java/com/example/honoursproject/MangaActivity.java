@@ -37,6 +37,7 @@ import org.json.JSONObject;
 public class MangaActivity extends AppCompatActivity {
 
     public static final int CHAPTER_NUMBER_LIMIT = 10;
+    public static final String CHOSEN_LANGUAGE = "en";
 
     private TextView tv_title;
     private TextView tv_author;
@@ -172,6 +173,7 @@ public class MangaActivity extends AppCompatActivity {
         Uri.Builder chapterBuilder = uri.buildUpon();
         chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
         chapterBuilder.appendQueryParameter("limit", Integer.toString(CHAPTER_NUMBER_LIMIT));
+        chapterBuilder.appendQueryParameter("translatedLanguage[]", CHOSEN_LANGUAGE);
         String chapterUrl = chapterBuilder.build().toString();
 
         StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,

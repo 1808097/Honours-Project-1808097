@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         queue.add(mangaRequest);
 
         btn_submit.setEnabled(true);
+        btn_submit.setVisibility(View.VISIBLE);
 
         return true;
     }
