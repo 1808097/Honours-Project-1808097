@@ -9,4 +9,9 @@
 
     <!--Reading Activity Values-->
     <string name="tv_test_value">Reading Test!</string>
+
+    <!---->
+    <string name="btn_goto_left_page">-</string>
+    <string name="btn_goto_right_page">+</string>
+
 </resources>
