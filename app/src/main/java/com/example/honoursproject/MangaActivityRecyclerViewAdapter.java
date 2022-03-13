@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -36,9 +37,9 @@ public class MangaActivityRecyclerViewAdapter extends RecyclerView.Adapter<Manga
     private Context context;
     public static RecyclerView.Adapter adapter;
 
-    public String[][] chapters;
+    public ArrayList<String[]> chapters;
 
-    public MangaActivityRecyclerViewAdapter(Context context, String[][] chapters) {
+    public MangaActivityRecyclerViewAdapter(Context context, ArrayList<String[]> chapters) {
         super();
         this.context = context;
         this.chapters = chapters;
@@ -56,30 +57,25 @@ public class MangaActivityRecyclerViewAdapter extends RecyclerView.Adapter<Manga
 
     @Override
     public void onBindViewHolder(@NonNull MangaActivityRecyclerViewAdapter.MangaActivityViewHolder holder, final int position) {
-        if(chapters[position]==null){
+        TextView tv = holder.itemView.findViewById(R.id.tv_chapter_recycler_view);
+        tv.setText(chapters.get(position)[1]);
 
-        }
-        else{
-            TextView tv = holder.itemView.findViewById(R.id.tv_chapter_recycler_view);
-            tv.setText(chapters[position][1]);
-
-            Button button = holder.itemView.findViewById(R.id.btn_chapter_recycler_button);
-            button.setVisibility(View.VISIBLE);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ReadingActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("CHAPTER_ID", chapters[position][0]);
-                    context.startActivity(intent);
-                }
-            });
-        }
+        Button button = holder.itemView.findViewById(R.id.btn_chapter_recycler_button);
+        button.setVisibility(View.VISIBLE);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ReadingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("CHAPTER_ID", chapters.get(position)[0]);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return CHAPTER_NUMBER_LIMIT;
+        return chapters.size();
     }
 
     class MangaActivityViewHolder extends RecyclerView.ViewHolder {

@@ -1,6 +1,8 @@
 package com.example.honoursproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import com.android.volley.Request;
@@ -30,34 +33,34 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnClickListener{
+public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
-    private TextView tv_change;
-    private Button btn_submit;
     private SearchView sv_search;
+
+    private SearchActivityRecyclerViewAdapter adapter;
 
     private String MANGA_ID;
     private String AUTHOR;
     private String ARTIST;
 
+    private ArrayList<String[]> mangas;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        tv_change = (TextView)findViewById(R.id.tv_change);
-
-        btn_submit = (Button)findViewById(R.id.btn_submit);
-        btn_submit.setOnClickListener(this);
-        btn_submit.setEnabled(false);
+        setContentView(R.layout.activity_search);
 
         sv_search = (SearchView)findViewById(R.id.sv_search);
         sv_search.setOnQueryTextListener(this);
+
+        RecyclerView rv = findViewById(R.id.rv_manga_list);
+        adapter = new SearchActivityRecyclerViewAdapter(getApplicationContext(), mangas);
+        rv.setAdapter(adapter);
+        rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        tv_change.setText(newText);
         return true;
     }
 
@@ -85,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
                         JSONObject attributes = firstManga.getJSONObject("attributes");
                         JSONObject title = attributes.getJSONObject("title");
-
-                        btn_submit.setText(title.getString("en"));
 
                         JSONArray relationships = firstManga.getJSONArray("relationships");
 
@@ -120,18 +121,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(mangaRequest);
 
-        btn_submit.setEnabled(true);
-        btn_submit.setVisibility(View.VISIBLE);
-
         return true;
-    }
-
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(getApplicationContext(), MangaActivity.class);
-        intent.putExtra("MANGA_ID", MANGA_ID);
-        intent.putExtra("AUTHOR_ID", AUTHOR);
-        intent.putExtra("ARTIST_ID", ARTIST);
-        startActivity(intent);
     }
 }

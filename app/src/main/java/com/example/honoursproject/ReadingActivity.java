@@ -74,6 +74,11 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
                             JSONObject chapter = json.getJSONObject("chapter");
 
                             hash = chapter.getString("hash");
+
+                            if(hash.isEmpty()){
+                                Toast.makeText(getApplicationContext(), "This chapter is unavailable to read", Toast.LENGTH_LONG).show();
+                                finish();
+                            }
                             chapterData = chapter.getJSONArray("data");
 
                             showMangaPage(chapterData.getString(currentPage));
@@ -88,7 +93,8 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //toast in case API returns nothing. Recommends using another name to find plant
-                        Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Could not retrieve chapter", Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 });
 
@@ -100,12 +106,11 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         if(v.getId()==R.id.btn_goto_left_page){
             if(currentPage==0){
-                System.out.println("TEST LEFT NOTHING");
+                //Do nothing
             }
             else{
                 currentPage--;
                 try{
-                    System.out.println("LEFT UPDATE");
                     showMangaPage(chapterData.getString(currentPage));
                 } catch (JSONException e) {
 
@@ -114,7 +119,7 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
         }
         else{
             if(currentPage==chapterData.length()-1){
-                System.out.println("TEST RIGHT NOTHING");
+                //Do nothing
             }
             else{
                 currentPage++;

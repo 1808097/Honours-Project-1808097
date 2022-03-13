@@ -20,6 +20,8 @@ import android.widget.Toast;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -34,10 +36,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MangaActivity extends AppCompatActivity {
+public class MangaActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final int CHAPTER_NUMBER_LIMIT = 10;
     public static final String CHOSEN_LANGUAGE = "en";
+
+    private int currentChapters;
+    private int totalChapters;
 
     private TextView tv_title;
     private TextView tv_author;
@@ -46,19 +51,29 @@ public class MangaActivity extends AppCompatActivity {
 
     private MangaActivityRecyclerViewAdapter adapter;
 
-    private String[][] chapters = new String[CHAPTER_NUMBER_LIMIT][];
+    private Intent launcher;
+
+    private ArrayList<String[]> chapters = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manga);
 
+        currentChapters = 0;
+
         tv_title = (TextView)findViewById(R.id.tv_title);
         tv_author = (TextView)findViewById(R.id.tv_author);
         tv_artist = (TextView)findViewById(R.id.tv_artist);
         tv_genres = (TextView)findViewById(R.id.tv_genres);
 
-        Intent launcher = getIntent();
+        Button btn_chapters_left = (Button)findViewById(R.id.btn_chapters_left);
+        btn_chapters_left.setOnClickListener(this);
+
+        Button btn_chapters_right = (Button)findViewById(R.id.btn_chapters_right);
+        btn_chapters_right.setOnClickListener(this);
+
+        launcher = getIntent();
 
         Uri uri = Uri.parse("https://api.mangadex.org/manga");
         Uri.Builder mangaBuilder = uri.buildUpon();
@@ -184,11 +199,13 @@ public class MangaActivity extends AppCompatActivity {
                             JSONObject json = new JSONObject(response);
                             JSONArray data = json.getJSONArray("data");
 
+                            totalChapters = json.getInt("total");
+
                             for(int i = 0; i < data.length(); i++){
                                 JSONObject chapter = data.getJSONObject(i);
                                 JSONObject attributes = chapter.getJSONObject("attributes");
 
-                                chapters[i] = new String[]{chapter.getString("id"), attributes.getString("title")};
+                                chapters.add(new String[]{chapter.getString("id"), attributes.getString("title")});
                             }
 
                             RecyclerView rv = findViewById(R.id.rv_chapter_list);
@@ -215,6 +232,76 @@ public class MangaActivity extends AppCompatActivity {
         queue.add(mangaRequest);
         queue.add(authorRequest);
         queue.add(artistRequest);
+        queue.add(chapterRequest);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId()==R.id.btn_chapters_left){
+            if(currentChapters==0){
+                //Do nothing
+            }
+            else{
+                currentChapters--;
+                getChapterList();
+            }
+        }
+        else{
+            if((currentChapters+1)*CHAPTER_NUMBER_LIMIT>totalChapters){
+                //Do nothing
+            }
+            else{
+                currentChapters++;
+                getChapterList();
+            }
+        }
+
+    }
+
+    public void getChapterList(){
+        Uri uri = Uri.parse("https://api.mangadex.org/chapter");
+        Uri.Builder chapterBuilder = uri.buildUpon();
+        chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
+        chapterBuilder.appendQueryParameter("limit", Integer.toString(CHAPTER_NUMBER_LIMIT));
+        chapterBuilder.appendQueryParameter("translatedLanguage[]", CHOSEN_LANGUAGE);
+        chapterBuilder.appendQueryParameter("offset", Integer.toString(currentChapters*CHAPTER_NUMBER_LIMIT));
+        String chapterUrl = chapterBuilder.build().toString();
+
+        StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            JSONArray data = json.getJSONArray("data");
+
+                            chapters.clear();
+
+                            for(int i = 0; i < data.length(); i++){
+                                JSONObject chapter = data.getJSONObject(i);
+                                JSONObject attributes = chapter.getJSONObject("attributes");
+
+                                chapters.add(new String[]{chapter.getString("id"), attributes.getString("title")});
+                            }
+
+                            adapter.notifyDataSetChanged();
+
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //toast in case API returns nothing. Recommends using another name to find plant
+                        Toast.makeText(getApplicationContext(), "Something Went Wrong 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        //send request
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(chapterRequest);
     }
 
