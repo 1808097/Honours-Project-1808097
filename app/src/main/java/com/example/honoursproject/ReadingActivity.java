@@ -133,8 +133,6 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void showMangaPage(String imageFileName){
-        System.out.println("TEST READING STARTED");
-
         final String url = "https://uploads.mangadex.org/data/" + hash + "/" + imageFileName;
 
         Thread thread = new Thread(new Runnable() {
@@ -157,6 +155,5 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         iv.setImageBitmap(bitmap);
-        System.out.println("TEST READING OVER");
     }
 }

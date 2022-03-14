@@ -39,9 +39,11 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     private SearchActivityRecyclerViewAdapter adapter;
 
-    private String MANGA_ID;
-    private String AUTHOR;
-    private String ARTIST;
+    private String manga_id;
+    private String title;
+    private String author;
+    private String artist;
+    private String cover_id;
 
     private ArrayList<String[]> mangas;
 
@@ -52,6 +54,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
         sv_search = (SearchView)findViewById(R.id.sv_search);
         sv_search.setOnQueryTextListener(this);
+
+        mangas = new ArrayList<>();
 
         RecyclerView rv = findViewById(R.id.rv_manga_list);
         adapter = new SearchActivityRecyclerViewAdapter(getApplicationContext(), mangas);
@@ -67,11 +71,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     public boolean onQueryTextSubmit(String query){
         Uri uri = Uri.parse("https://api.mangadex.org/manga");
-
         Uri.Builder builder = uri.buildUpon();
-
         builder.appendQueryParameter("title", query);
-
         String url = builder.build().toString();
 
         StringRequest mangaRequest = new StringRequest(Request.Method.GET, url,
@@ -82,26 +83,35 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                         JSONObject json = new JSONObject(response);
                         JSONArray data = json.getJSONArray("data");
 
-                        JSONObject firstManga = data.getJSONObject(0);
+                        for(int i=0; i < data.length(); i++){
+                            JSONObject manga = data.getJSONObject(i);
 
-                        MANGA_ID = firstManga.getString("id");
+                            manga_id = manga.getString("id");
 
-                        JSONObject attributes = firstManga.getJSONObject("attributes");
-                        JSONObject title = attributes.getJSONObject("title");
+                            JSONObject attributes = manga.getJSONObject("attributes");
+                            JSONObject titleObject = attributes.getJSONObject("title");
 
-                        JSONArray relationships = firstManga.getJSONArray("relationships");
+                            title = titleObject.getString("en");
 
-                        for(int i = 0; i < relationships.length(); i++){
-                            JSONObject object = relationships.getJSONObject(i);
+                            JSONArray relationships = manga.getJSONArray("relationships");
 
-                            if(object.getString("type").equals("author")){
-                                AUTHOR = object.getString("id");
+                            for(int j = 0; j < relationships.length(); j++){
+                                JSONObject object = relationships.getJSONObject(j);
+
+                                if(object.getString("type").equals("author")){
+                                    author = object.getString("id");
+                                }
+                                else if(object.getString("type").equals("artist")){
+                                    artist = object.getString("id");
+                                }
+                                else if(object.getString("type").equals("cover_art")){
+                                    cover_id = object.getString("id");
+                                }
+
                             }
-                            else if(object.getString("type").equals("artist")){
-                                ARTIST = object.getString("id");
-                            }
-
+                            mangas.add(new String[]{manga_id, title, author, artist, cover_id});
                         }
+                        adapter.notifyDataSetChanged();
 
                     } catch (JSONException e) {
                         Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
