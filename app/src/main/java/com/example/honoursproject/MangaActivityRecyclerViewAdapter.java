@@ -32,8 +32,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class MangaActivityRecyclerViewAdapter extends RecyclerView.Adapter<MangaActivityRecyclerViewAdapter.MangaActivityViewHolder>{
 
-    public static final int CHAPTER_NUMBER_LIMIT = 10;
-
     private Context context;
     public static RecyclerView.Adapter adapter;
 

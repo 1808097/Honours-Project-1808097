@@ -38,6 +38,8 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
 
     private ArrayList<String[]> mangas;
 
+    private String coverFileName;
+
     private Bitmap bitmap;
 
     public SearchActivityRecyclerViewAdapter(Context context, ArrayList<String[]> mangas) {
@@ -58,11 +60,8 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
 
     @Override
     public void onBindViewHolder(@NonNull SearchActivityRecyclerViewAdapter.SearchActivityViewHolder holder, final int position) {
-        System.out.println(mangas.get(position)[1]);
-
         TextView tv = holder.itemView.findViewById(R.id.tv_title);
         tv.setText(mangas.get(position)[1]);
-
 
         final ImageView iv = holder.itemView.findViewById(R.id.iv_cover);
 
@@ -78,9 +77,9 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                             JSONObject json = new JSONObject(response);
                             JSONObject data = json.getJSONObject("data");
                             JSONObject attributes = data.getJSONObject("attributes");
-                            String fileName = attributes.getString("fileName");
+                            coverFileName = attributes.getString("fileName");
 
-                            final String url = "https://uploads.mangadex.org/covers/" + mangas.get(position)[0] + "/" + fileName;
+                            final String url = "https://uploads.mangadex.org/covers/" + mangas.get(position)[0] + "/" + coverFileName;
 
                             Thread thread = new Thread(new Runnable() {
                                 @Override
@@ -131,6 +130,7 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                 intent.putExtra("MANGA_ID", mangas.get(position)[0]);
                 intent.putExtra("AUTHOR_ID", mangas.get(position)[2]);
                 intent.putExtra("ARTIST_ID", mangas.get(position)[3]);
+                intent.putExtra("COVER_FILE_NAME", coverFileName);
                 context.startActivity(intent);
             }
         });

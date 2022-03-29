@@ -55,6 +55,36 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         sv_search = (SearchView)findViewById(R.id.sv_search);
         sv_search.setOnQueryTextListener(this);
 
+        Button btn_search = (Button)findViewById(R.id.btn_search);
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+                finish();
+                startActivity(intent);
+            }
+        });
+
+        Button btn_favourites = (Button)findViewById(R.id.btn_favourites);
+        btn_favourites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), FavouritesActivity.class);
+                finish();
+                startActivity(intent);
+            }
+        });
+
+        Button btn_settings = (Button)findViewById(R.id.btn_settings);
+        btn_settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*Intent intent = new Intent(getApplicationContext(), Activity.class);
+                finish();
+                startActivity(intent);*/
+            }
+        });
+
         mangas = new ArrayList<>();
 
         RecyclerView rv = findViewById(R.id.rv_manga_list);

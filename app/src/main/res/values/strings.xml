@@ -3,10 +3,13 @@
 
     <string name="title_activity_reading">ReadingActivity</string>
 
+    <!--Menu Buttons-->
+    <string name="btn_search">Search</string>
+    <string name="btn_favourites">Favourites</string>
+    <string name="btn_settings">Settings</string>
 
     <!--Search Activity Values-->
     <string name="tv_search">Search mangas by:</string>
-    <string name="btn_read">Read</string>
 
     <string-array name="sp_search_setting">
         <item>Title</item>
@@ -19,10 +22,23 @@
     <string name="btn_chapters_left">Prev</string>
     <string name="btn_chapters_right">Next</string>
 
-    <!--Manga Activity Recycler View Values-->
+    <!--Recycler Activity View Values-->
     <string name="btn_chapter_recycler_button">Read</string>
+    <string name="btn_read">Read</string>
+    <string name="btn_select">Select</string>
+    <string name="btn_delete">Delete</string>
 
     <!--Reading Activity Values-->
     <string name="tv_test_value">Reading Test!</string>
+
+    <!--Favourites Activity Values-->
+    <string name="tv_favourites">Favourites</string>
+
+    <!--Re-used Activity Values-->
+    <string name="tv_author_const">Author:</string>
+    <string name="tv_artist_const">Artist:</string>
+    <string name="tv_genres_const">Genres:</string>
+    <string name="cb_favourite">Favourite</string>
+
 
 </resources>

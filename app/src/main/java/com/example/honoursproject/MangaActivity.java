@@ -3,6 +3,7 @@ package com.example.honoursproject;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Database;
 
 import android.os.Bundle;
 import android.content.Intent;
@@ -13,7 +14,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import com.android.volley.Request;
@@ -31,6 +36,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.honoursproject.Data.Manga;
+import com.example.honoursproject.Data.MangaDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,8 +45,10 @@ import org.json.JSONObject;
 
 public class MangaActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final int CHAPTER_NUMBER_LIMIT = 10;
-    public static final String CHOSEN_LANGUAGE = "en";
+    private static final int CHAPTER_NUMBER_LIMIT = 10;
+    private static final String CHOSEN_LANGUAGE = "en";
+
+    private MangaDatabase database;
 
     private int currentChapters;
     private int totalChapters;
@@ -48,6 +57,11 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
     private TextView tv_author;
     private TextView tv_artist;
     private TextView tv_genres;
+
+    private String author;
+    private String artist;
+    private String title;
+    private String cover_id;
 
     private MangaActivityRecyclerViewAdapter adapter;
 
@@ -59,6 +73,10 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manga);
+
+        database = MangaDatabase.getDatabase(getApplicationContext());
+
+        launcher = getIntent();
 
         currentChapters = 0;
 
@@ -73,7 +91,65 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
         Button btn_chapters_right = (Button)findViewById(R.id.btn_chapters_right);
         btn_chapters_right.setOnClickListener(this);
 
-        launcher = getIntent();
+        Button btn_search = (Button)findViewById(R.id.btn_search);
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+                finish();
+                startActivity(intent);
+            }
+        });
+
+        Button btn_favourites = (Button)findViewById(R.id.btn_favourites);
+        btn_favourites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), FavouritesActivity.class);
+                finish();
+                startActivity(intent);
+            }
+        });
+
+        Button btn_settings = (Button)findViewById(R.id.btn_settings);
+        btn_settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*Intent intent = new Intent(getApplicationContext(), Activity.class);
+                finish();
+                startActivity(intent);*/
+            }
+        });
+
+        CheckBox checkBox = (CheckBox)findViewById(R.id.cb_favourite);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    Manga manga = new Manga();
+                    manga.setManga_id(launcher.getStringExtra("MANGA_ID"));
+                    manga.setTitle(title);
+                    manga.setAuthor_id(launcher.getStringExtra("AUTHOR_ID"));
+                    manga.setAuthor(author);
+                    manga.setArtist_id(launcher.getStringExtra("ARTIST_ID"));
+                    manga.setArtist(artist);
+                    manga.setCover_id(launcher.getStringExtra("COVER_FILE_NAME"));
+                    database.mangaDao().insert(manga);
+                }
+                else{
+                    Manga manga = database.mangaDao().getManga(launcher.getStringExtra("MANGA_ID"));
+                    database.mangaDao().delete(manga);
+                }
+            }
+
+        });
+
+        List<Manga> mangaList = database.mangaDao().getAllMangas();
+        for(Manga manga : mangaList){
+            if(manga.getManga_id().equals(launcher.getStringExtra("MANGA_ID"))){
+                checkBox.setChecked(true);
+            }
+        }
 
         Uri uri = Uri.parse("https://api.mangadex.org/manga");
         Uri.Builder mangaBuilder = uri.buildUpon();
@@ -91,8 +167,9 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
                             JSONObject firstManga = data.getJSONObject(0);
                             JSONObject attributes = firstManga.getJSONObject("attributes");
 
-                            JSONObject title = attributes.getJSONObject("title");
-                            tv_title.setText(title.getString("en"));
+                            JSONObject titleJSON = attributes.getJSONObject("title");
+                            title = titleJSON.getString("en");
+                            tv_title.setText(title);
 
                             JSONArray tags = attributes.getJSONArray("tags");
 
@@ -102,11 +179,11 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
                                 JSONObject objectAttributes = object.getJSONObject("attributes");
                                 if(objectAttributes.getString("group").equals("genre")){
                                     JSONObject name = objectAttributes.getJSONObject("name");
-                                    genres += "(" + name.getString("en") + ")";
+                                    genres += ", " + name.getString("en");
                                 }
                             }
 
-                            tv_genres.setText(genres);
+                            tv_genres.setText(genres.substring(2));
 
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
@@ -137,7 +214,8 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
 
                             JSONObject attributes = data.getJSONObject("attributes");
 
-                            tv_author.setText(attributes.getString("name"));
+                            author = attributes.getString("name");
+                            tv_author.setText(author);
 
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
@@ -168,7 +246,8 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
 
                             JSONObject attributes = data.getJSONObject("attributes");
 
-                            tv_artist.setText(attributes.getString("name"));
+                            artist = attributes.getString("name");
+                            tv_artist.setText(artist);
 
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();

@@ -4,61 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <SearchView
-        android:id="@+id/sv_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_search" />
+    tools:context=".FavouritesActivity">
 
     <TextView
-        android:id="@+id/tv_search"
+        android:id="@+id/tv_favourites"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/tv_search"
-        android:textSize="18sp"
+        android:text="@string/tv_favourites"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Spinner
-        android:id="@+id/sp_search_setting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/sp_search_setting"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tv_search"
-        app:layout_constraintTop_toTopOf="@+id/tv_search" />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_manga_list"
+        android:id="@+id/rv_favourites_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toTopOf="@+id/btn_favourites"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sv_search" />
-
-    <Button
-        android:id="@+id/btn_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_search"
-        app:layout_constraintBottom_toBottomOf="@+id/btn_favourites"
-        app:layout_constraintEnd_toStartOf="@+id/btn_favourites"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btn_favourites" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_favourites" />
 
     <Button
         android:id="@+id/btn_favourites"
@@ -72,6 +40,17 @@
         app:layout_constraintStart_toEndOf="@+id/btn_search" />
 
     <Button
+        android:id="@+id/btn_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_search"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_favourites"
+        app:layout_constraintEnd_toStartOf="@+id/btn_favourites"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_favourites" />
+
+    <Button
         android:id="@+id/btn_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -81,5 +60,4 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btn_favourites"
         app:layout_constraintTop_toTopOf="@+id/btn_favourites" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
