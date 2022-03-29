@@ -136,6 +136,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                                 }
                                 else if(object.getString("type").equals("cover_art")){
                                     cover_id = object.getString("id");
+
+                                    System.out.println("TESTING SEARCH COVER ID");
+                                    System.out.println(cover_id);
                                 }
 
                             }

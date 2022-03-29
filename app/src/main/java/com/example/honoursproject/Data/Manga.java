@@ -68,7 +68,7 @@ public class Manga {
     }
 
     public String getCover_id() {
-        return artist;
+        return cover_id;
     }
     public void setCover_id(String cover_id) {
         this.cover_id = cover_id;

@@ -38,7 +38,7 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
 
     private ArrayList<String[]> mangas;
 
-    private String coverFileName;
+    private ArrayList<String> coverFileNames;
 
     private Bitmap bitmap;
 
@@ -48,6 +48,7 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
         this.mangas = mangas;
 
         adapter=this;
+        coverFileNames = new ArrayList<>();
     }
 
     @NonNull
@@ -77,9 +78,12 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                             JSONObject json = new JSONObject(response);
                             JSONObject data = json.getJSONObject("data");
                             JSONObject attributes = data.getJSONObject("attributes");
-                            coverFileName = attributes.getString("fileName");
+                            coverFileNames.add(attributes.getString("fileName"));
 
-                            final String url = "https://uploads.mangadex.org/covers/" + mangas.get(position)[0] + "/" + coverFileName;
+                            System.out.println("TESTING COVER FILE NAME SEARCH RECYCLER");
+                            System.out.println(coverFileNames.get(position));
+
+                            final String url = "https://uploads.mangadex.org/covers/" + mangas.get(position)[0] + "/" + coverFileNames.get(position);
 
                             Thread thread = new Thread(new Runnable() {
                                 @Override
@@ -130,7 +134,7 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                 intent.putExtra("MANGA_ID", mangas.get(position)[0]);
                 intent.putExtra("AUTHOR_ID", mangas.get(position)[2]);
                 intent.putExtra("ARTIST_ID", mangas.get(position)[3]);
-                intent.putExtra("COVER_FILE_NAME", coverFileName);
+                intent.putExtra("COVER_FILE_NAME", coverFileNames.get(position));
                 context.startActivity(intent);
             }
         });

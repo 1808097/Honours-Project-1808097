@@ -122,6 +122,14 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
         });
 
         CheckBox checkBox = (CheckBox)findViewById(R.id.cb_favourite);
+
+        List<Manga> mangaList = database.mangaDao().getAllMangas();
+        for(Manga manga : mangaList){
+            if(manga.getManga_id().equals(launcher.getStringExtra("MANGA_ID"))){
+                checkBox.setChecked(true);
+            }
+        }
+
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -137,19 +145,11 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
                     database.mangaDao().insert(manga);
                 }
                 else{
-                    Manga manga = database.mangaDao().getManga(launcher.getStringExtra("MANGA_ID"));
-                    database.mangaDao().delete(manga);
+                    database.mangaDao().deleteManga(launcher.getStringExtra("MANGA_ID"));
                 }
             }
 
         });
-
-        List<Manga> mangaList = database.mangaDao().getAllMangas();
-        for(Manga manga : mangaList){
-            if(manga.getManga_id().equals(launcher.getStringExtra("MANGA_ID"))){
-                checkBox.setChecked(true);
-            }
-        }
 
         Uri uri = Uri.parse("https://api.mangadex.org/manga");
         Uri.Builder mangaBuilder = uri.buildUpon();

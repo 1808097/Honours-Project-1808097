@@ -27,6 +27,7 @@ public interface MangaDao {
     @Query("SELECT * from Manga WHERE id LIKE :id")
     public Manga getManga(int id);
 
-    @Query("SELECT * from Manga WHERE manga_id LIKE :manga_id")
-    public Manga getManga(String manga_id);
+    @Query("DELETE from Manga WHERE manga_id = :manga_id")
+    public void deleteManga(String manga_id);
+
 }

@@ -39,7 +39,6 @@ public class FavouritesActivityRecyclerViewAdapter extends RecyclerView.Adapter<
 
     private MangaDatabase database;
 
-    private Manga manga;
     private Bitmap bitmap;
 
     public FavouritesActivityRecyclerViewAdapter(Context context) {
@@ -59,7 +58,7 @@ public class FavouritesActivityRecyclerViewAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(@NonNull FavouritesActivityRecyclerViewAdapter.FavouritesActivityViewHolder holder, final int position) {
-        manga = database.mangaDao().getAllMangas().get(position);
+        final Manga manga = database.mangaDao().getAllMangas().get(position);
 
         TextView tv_title = holder.itemView.findViewById(R.id.tv_title);
         tv_title.setText(manga.getTitle());
@@ -70,8 +69,40 @@ public class FavouritesActivityRecyclerViewAdapter extends RecyclerView.Adapter<
         TextView tv_artist = holder.itemView.findViewById(R.id.tv_artist);
         tv_artist.setText(manga.getArtist());
 
+        System.out.println("TESTING");
+        System.out.println(manga.getManga_id());
+        System.out.println(manga.getCover_id());
+
+        Button button = holder.itemView.findViewById(R.id.btn_select);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MangaActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                intent.putExtra("MANGA_ID", manga.getManga_id());
+                intent.putExtra("AUTHOR_ID", manga.getAuthor_id());
+                intent.putExtra("ARTIST_ID", manga.getArtist_id());
+                intent.putExtra("COVER_FILE_NAME", manga.getCover_id());
+                context.startActivity(intent);
+            }
+        });
+
+        button = holder.itemView.findViewById(R.id.btn_delete);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                database.mangaDao().delete(manga);
+
+                adapter.notifyItemRemoved(position);
+                adapter.notifyItemRangeChanged(position, getItemCount());
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        ImageView iv = holder.itemView.findViewById(R.id.iv_cover);
+
         final String url = "https://uploads.mangadex.org/covers/" + manga.getManga_id() + "/" + manga.getCover_id();
-        System.out.println(url);
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -92,23 +123,8 @@ public class FavouritesActivityRecyclerViewAdapter extends RecyclerView.Adapter<
 
         }
 
-        ImageView iv = holder.itemView.findViewById(R.id.iv_cover);
         iv.setImageBitmap(bitmap);
 
-        Button button = holder.itemView.findViewById(R.id.btn_select);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, MangaActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                intent.putExtra("MANGA_ID", manga.getManga_id());
-                intent.putExtra("AUTHOR_ID", manga.getAuthor_id());
-                intent.putExtra("ARTIST_ID", manga.getArtist_id());
-                intent.putExtra("COVER_FILE_NAME", manga.getCover_id());
-                context.startActivity(intent);
-            }
-        });
     }
 
     @Override
