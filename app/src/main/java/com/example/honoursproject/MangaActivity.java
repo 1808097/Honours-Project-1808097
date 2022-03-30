@@ -19,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.honoursproject.Data.ConstantValues;
 import com.example.honoursproject.Data.Manga;
 import com.example.honoursproject.Data.MangaDatabase;
 
@@ -44,9 +46,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MangaActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private static final int CHAPTER_NUMBER_LIMIT = 10;
-    private static final String CHOSEN_LANGUAGE = "en";
 
     private MangaDatabase database;
 
@@ -61,7 +60,6 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
     private String author;
     private String artist;
     private String title;
-    private String cover_id;
 
     private MangaActivityRecyclerViewAdapter adapter;
 
@@ -115,13 +113,13 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
         btn_settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent(getApplicationContext(), Activity.class);
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
                 finish();
-                startActivity(intent);*/
+                startActivity(intent);
             }
         });
 
-        CheckBox checkBox = (CheckBox)findViewById(R.id.cb_favourite);
+        Switch checkBox = (Switch) findViewById(R.id.sw_favourite);
 
         List<Manga> mangaList = database.mangaDao().getAllMangas();
         for(Manga manga : mangaList){
@@ -266,8 +264,8 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
         uri = Uri.parse("https://api.mangadex.org/chapter");
         Uri.Builder chapterBuilder = uri.buildUpon();
         chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
-        chapterBuilder.appendQueryParameter("limit", Integer.toString(CHAPTER_NUMBER_LIMIT));
-        chapterBuilder.appendQueryParameter("translatedLanguage[]", CHOSEN_LANGUAGE);
+        chapterBuilder.appendQueryParameter("limit", Integer.toString(ConstantValues.CHAPTER_NUMBER_LIMIT));
+        chapterBuilder.appendQueryParameter("translatedLanguage[]", ConstantValues.CHOSEN_LANGUAGE);
         String chapterUrl = chapterBuilder.build().toString();
 
         StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,
@@ -326,7 +324,7 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
             }
         }
         else{
-            if((currentChapters+1)*CHAPTER_NUMBER_LIMIT>totalChapters){
+            if((currentChapters+1)*ConstantValues.CHAPTER_NUMBER_LIMIT>totalChapters){
                 //Do nothing
             }
             else{
@@ -341,9 +339,9 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
         Uri uri = Uri.parse("https://api.mangadex.org/chapter");
         Uri.Builder chapterBuilder = uri.buildUpon();
         chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
-        chapterBuilder.appendQueryParameter("limit", Integer.toString(CHAPTER_NUMBER_LIMIT));
-        chapterBuilder.appendQueryParameter("translatedLanguage[]", CHOSEN_LANGUAGE);
-        chapterBuilder.appendQueryParameter("offset", Integer.toString(currentChapters*CHAPTER_NUMBER_LIMIT));
+        chapterBuilder.appendQueryParameter("limit", Integer.toString(ConstantValues.CHAPTER_NUMBER_LIMIT));
+        chapterBuilder.appendQueryParameter("translatedLanguage[]", ConstantValues.CHOSEN_LANGUAGE);
+        chapterBuilder.appendQueryParameter("offset", Integer.toString(currentChapters*ConstantValues.CHAPTER_NUMBER_LIMIT));
         String chapterUrl = chapterBuilder.build().toString();
 
         StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,

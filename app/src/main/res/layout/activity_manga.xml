@@ -16,11 +16,16 @@
 
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
             android:textSize="24sp"
-            app:layout_constraintEnd_toStartOf="@+id/cb_favourite"
+            app:layout_constraintEnd_toStartOf="@+id/sw_favourite"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Title" />
@@ -49,9 +54,14 @@
 
         <TextView
             android:id="@+id/tv_genres"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_author_const"
@@ -144,13 +154,13 @@
             app:layout_constraintStart_toEndOf="@+id/tv_author_const"
             app:layout_constraintTop_toTopOf="@+id/tv_author" />
 
-        <CheckBox
-            android:id="@+id/cb_favourite"
+        <Switch
+            android:id="@+id/sw_favourite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:text="@string/cb_favourite"
+            android:text="@string/sw_favourite"
             app:layout_constraintBottom_toBottomOf="@+id/tv_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_title" />

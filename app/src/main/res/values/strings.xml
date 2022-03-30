@@ -38,7 +38,11 @@
     <string name="tv_author_const">Author:</string>
     <string name="tv_artist_const">Artist:</string>
     <string name="tv_genres_const">Genres:</string>
-    <string name="cb_favourite">Favourite</string>
+    <string name="sw_favourite">Favourite</string>
+
+    <!--Settings Activity Values-->
+    <string name="tv_settings_title">Settings</string>
+    <string name="sw_darkmode">Dark mode</string>
 
 
 </resources>

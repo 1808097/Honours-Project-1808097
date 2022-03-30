@@ -38,8 +38,6 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
 
     private ArrayList<String[]> mangas;
 
-    private ArrayList<String> coverFileNames;
-
     private Bitmap bitmap;
 
     public SearchActivityRecyclerViewAdapter(Context context, ArrayList<String[]> mangas) {
@@ -48,7 +46,6 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
         this.mangas = mangas;
 
         adapter=this;
-        coverFileNames = new ArrayList<>();
     }
 
     @NonNull
@@ -60,7 +57,7 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SearchActivityRecyclerViewAdapter.SearchActivityViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final SearchActivityRecyclerViewAdapter.SearchActivityViewHolder holder, final int position) {
         TextView tv = holder.itemView.findViewById(R.id.tv_title);
         tv.setText(mangas.get(position)[1]);
 
@@ -78,12 +75,9 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                             JSONObject json = new JSONObject(response);
                             JSONObject data = json.getJSONObject("data");
                             JSONObject attributes = data.getJSONObject("attributes");
-                            coverFileNames.add(attributes.getString("fileName"));
+                            final String coverFileName = attributes.getString("fileName");
 
-                            System.out.println("TESTING COVER FILE NAME SEARCH RECYCLER");
-                            System.out.println(coverFileNames.get(position));
-
-                            final String url = "https://uploads.mangadex.org/covers/" + mangas.get(position)[0] + "/" + coverFileNames.get(position);
+                            final String url = "https://uploads.mangadex.org/covers/" + mangas.get(position)[0] + "/" + coverFileName;
 
                             Thread thread = new Thread(new Runnable() {
                                 @Override
@@ -96,6 +90,21 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                                 }
                             });
                             thread.start();
+
+                            Button button = holder.itemView.findViewById(R.id.btn_read);
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(context, MangaActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                    intent.putExtra("MANGA_ID", mangas.get(position)[0]);
+                                    intent.putExtra("AUTHOR_ID", mangas.get(position)[2]);
+                                    intent.putExtra("ARTIST_ID", mangas.get(position)[3]);
+                                    intent.putExtra("COVER_FILE_NAME", coverFileName);
+                                    context.startActivity(intent);
+                                }
+                            });
 
                             try{
                                 thread.join();
@@ -122,22 +131,6 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
         //send request
         RequestQueue queue = Volley.newRequestQueue(context);
         queue.add(mangaRequest);
-
-
-        Button button = holder.itemView.findViewById(R.id.btn_read);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, MangaActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                intent.putExtra("MANGA_ID", mangas.get(position)[0]);
-                intent.putExtra("AUTHOR_ID", mangas.get(position)[2]);
-                intent.putExtra("ARTIST_ID", mangas.get(position)[3]);
-                intent.putExtra("COVER_FILE_NAME", coverFileNames.get(position));
-                context.startActivity(intent);
-            }
-        });
     }
 
     @Override
