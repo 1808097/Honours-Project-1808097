@@ -29,7 +29,7 @@
     <string name="btn_delete">Delete</string>
 
     <!--Reading Activity Values-->
-    <string name="tv_test_value">Reading Test!</string>
+
 
     <!--Favourites Activity Values-->
     <string name="tv_favourites">Favourites</string>

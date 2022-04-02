@@ -251,6 +251,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                             Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
                         }
                     });
+
             //send request
             RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
             queue.add(mangaRequest);
