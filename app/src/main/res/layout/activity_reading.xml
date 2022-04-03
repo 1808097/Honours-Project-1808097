@@ -20,20 +20,20 @@
         android:id="@+id/btn_goto_left_page"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="@string/btn_goto_left_page"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_goto_right_page"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Left Button" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_goto_right_page"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="@string/btn_goto_right_page"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_goto_left_page"
-        tools:text="Right Button" />
+        app:layout_constraintStart_toEndOf="@+id/btn_goto_left_page" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

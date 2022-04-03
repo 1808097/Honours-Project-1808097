@@ -29,7 +29,8 @@
     <string name="btn_delete">Delete</string>
 
     <!--Reading Activity Values-->
-
+    <string name="btn_goto_left_page">\u003C\u002D\u002D</string>
+    <string name="btn_goto_right_page">\u002D\u002D\u003E</string>
 
     <!--Favourites Activity Values-->
     <string name="tv_favourites">Favourites</string>

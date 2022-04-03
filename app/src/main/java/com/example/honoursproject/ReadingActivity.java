@@ -63,11 +63,9 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
         launcher = getIntent();
 
         Button btn_goto_left_page = (Button) findViewById(R.id.btn_goto_left_page);
-        btn_goto_left_page.setBackgroundColor(Color.TRANSPARENT);
         btn_goto_left_page.setOnClickListener(this);
 
         Button btn_goto_right_page = (Button) findViewById(R.id.btn_goto_right_page);
-        btn_goto_right_page.setBackgroundColor(Color.TRANSPARENT);
         btn_goto_right_page.setOnClickListener(this);
 
         Uri uri = Uri.parse("https://api.mangadex.org/at-home/server/" + launcher.getStringExtra("CHAPTER_ID"));
