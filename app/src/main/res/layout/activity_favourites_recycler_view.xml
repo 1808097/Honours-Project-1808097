@@ -7,11 +7,14 @@
 
     <TextView
         android:id="@+id/tv_artist"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/tv_artist_const"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tv_artist_const"
         app:layout_constraintTop_toTopOf="@+id/tv_artist_const"
         tools:text="artist" />
@@ -57,7 +60,7 @@
         android:id="@+id/tv_author_const"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/tv_author_const"
         app:layout_constraintStart_toStartOf="@+id/tv_title"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
@@ -66,18 +69,21 @@
         android:id="@+id/tv_artist_const"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/tv_artist_const"
         app:layout_constraintStart_toStartOf="@+id/tv_author_const"
         app:layout_constraintTop_toBottomOf="@+id/tv_author_const" />
 
     <TextView
         android:id="@+id/tv_author"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/tv_author_const"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tv_author_const"
         app:layout_constraintTop_toTopOf="@+id/tv_author_const"
         tools:text="author" />
@@ -92,4 +98,15 @@
         app:layout_constraintBottom_toBottomOf="@+id/btn_select"
         app:layout_constraintEnd_toStartOf="@+id/btn_select"
         app:layout_constraintTop_toTopOf="@+id/btn_select" />
+
+    <TextView
+        android:id="@+id/tv_chapter_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/holo_red_light"
+        app:layout_constraintStart_toStartOf="@+id/tv_artist_const"
+        app:layout_constraintTop_toBottomOf="@+id/tv_artist_const"
+        tools:text="New chapter or not?" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

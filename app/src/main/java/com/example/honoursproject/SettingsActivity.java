@@ -14,9 +14,11 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Spinner;
 import android.widget.Switch;
 
 import com.example.honoursproject.Data.ConstantValues;
@@ -29,7 +31,7 @@ import static android.content.res.Configuration.UI_MODE_NIGHT_MASK;
 public class SettingsActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
-    SharedPreferences.Editor prefEditor;
+    private SharedPreferences.Editor prefEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,123 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        Spinner sp_chapter_language = (Spinner)findViewById(R.id.sp_chapter_language);
+        switch (sharedPreferences.getString(ConstantValues.CHOSEN_LANGUAGE, "en")) {
+            case "en":
+                sp_chapter_language.setSelection(0);
+                break;
+            case "zh":
+                sp_chapter_language.setSelection(1);
+                break;
+            case "hr":
+                sp_chapter_language.setSelection(2);
+                break;
+            case "fr":
+                sp_chapter_language.setSelection(3);
+                break;
+            case "de":
+                sp_chapter_language.setSelection(4);
+                break;
+            case "id":
+                sp_chapter_language.setSelection(5);
+                break;
+            case "it":
+                sp_chapter_language.setSelection(6);
+                break;
+            case "jp":
+                sp_chapter_language.setSelection(7);
+                break;
+            case "ko":
+                sp_chapter_language.setSelection(8);
+                break;
+            case "pl":
+                sp_chapter_language.setSelection(9);
+                break;
+            case "pt":
+                sp_chapter_language.setSelection(10);
+                break;
+            case "ru":
+                sp_chapter_language.setSelection(11);
+                break;
+            case "tr":
+                sp_chapter_language.setSelection(12);
+                break;
+        }
+        sp_chapter_language.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "en");
+                        break;
+                    case 1:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "zh");
+                        break;
+                    case 2:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "hr");
+                        break;
+                    case 3:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "fr");
+                        break;
+                    case 4:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "de");
+                        break;
+                    case 5:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "id");
+                        break;
+                    case 6:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "it");
+                        break;
+                    case 7:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "jp");
+                        break;
+                    case 8:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "ko");
+                        break;
+                    case 9:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "pl");
+                        break;
+                    case 10:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "pt");
+                        break;
+                    case 11:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "ru");
+                        break;
+                    case 12:
+                        prefEditor.putString(ConstantValues.CHOSEN_LANGUAGE, "tr");
+                        break;
+                }
+                prefEditor.apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            //empty
+            }
+        });
+
+        Spinner sp_chapter_buttons = (Spinner)findViewById(R.id.sp_chapter_buttons);
+        if(!sharedPreferences.getBoolean(ConstantValues.BUTTON_POSITION, true)){
+            sp_chapter_buttons.setSelection(1);
+        }
+        sp_chapter_buttons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position == 0) {
+                        prefEditor.putBoolean(ConstantValues.BUTTON_POSITION, true);
+                        prefEditor.apply();
+                    }
+                    else{
+                        prefEditor.putBoolean(ConstantValues.BUTTON_POSITION, false);
+                        prefEditor.apply();
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    //empty
+                }
+        });
 
 
         Button btn_search = (Button)findViewById(R.id.btn_search);
@@ -89,42 +208,5 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-        createNotificationChannel();
-
-        Intent intent = new Intent(this, SettingsActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Testing Channel")
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("Test")
-                .setContentText("Testing notifications")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-        // Set the intent that will fire when the user taps the notification
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(123, builder.build());
-
-    }
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "TESTING";
-            String description = "Test notification channel";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("Testing Channel", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 }

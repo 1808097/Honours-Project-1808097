@@ -5,31 +5,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Database;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.RadioGroup;
-import android.widget.SearchView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -67,10 +55,14 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
 
     private ArrayList<String[]> chapters = new ArrayList<>();
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manga);
+
+        sharedPreferences = getSharedPreferences(ConstantValues.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
 
         database = MangaDatabase.getDatabase(getApplicationContext());
 
@@ -125,6 +117,8 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
         for(Manga manga : mangaList){
             if(manga.getManga_id().equals(launcher.getStringExtra("MANGA_ID"))){
                 checkBox.setChecked(true);
+                manga.setChapterNumber(totalChapters);
+                database.mangaDao().update(manga);
             }
         }
 
@@ -140,6 +134,8 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
                     manga.setArtist_id(launcher.getStringExtra("ARTIST_ID"));
                     manga.setArtist(artist);
                     manga.setCover_id(launcher.getStringExtra("COVER_FILE_NAME"));
+                    manga.setChapterNumber(totalChapters);
+                    manga.setLanguage(sharedPreferences.getString(ConstantValues.CHOSEN_LANGUAGE, "en"));
                     database.mangaDao().insert(manga);
                 }
                 else{
@@ -265,7 +261,7 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
         Uri.Builder chapterBuilder = uri.buildUpon();
         chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
         chapterBuilder.appendQueryParameter("limit", Integer.toString(ConstantValues.CHAPTER_NUMBER_LIMIT));
-        chapterBuilder.appendQueryParameter("translatedLanguage[]", ConstantValues.CHOSEN_LANGUAGE);
+        chapterBuilder.appendQueryParameter("translatedLanguage[]", sharedPreferences.getString(ConstantValues.CHOSEN_LANGUAGE, "en"));
         String chapterUrl = chapterBuilder.build().toString();
 
         StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,
@@ -278,11 +274,19 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
 
                             totalChapters = json.getInt("total");
 
+                            List<Manga> mangaList = database.mangaDao().getAllMangas();
+                            for(Manga manga : mangaList){
+                                if(manga.getManga_id().equals(launcher.getStringExtra("MANGA_ID"))){
+                                    manga.setChapterNumber(totalChapters);
+                                    database.mangaDao().update(manga);
+                                }
+                            }
+
                             for(int i = 0; i < data.length(); i++){
                                 JSONObject chapter = data.getJSONObject(i);
                                 JSONObject attributes = chapter.getJSONObject("attributes");
 
-                                chapters.add(new String[]{chapter.getString("id"), attributes.getString("title")});
+                                chapters.add(new String[]{chapter.getString("id"), attributes.getString("title"), attributes.getString("chapter")});
                             }
 
                             RecyclerView rv = findViewById(R.id.rv_chapter_list);
@@ -340,7 +344,7 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
         Uri.Builder chapterBuilder = uri.buildUpon();
         chapterBuilder.appendQueryParameter("manga", launcher.getStringExtra("MANGA_ID"));
         chapterBuilder.appendQueryParameter("limit", Integer.toString(ConstantValues.CHAPTER_NUMBER_LIMIT));
-        chapterBuilder.appendQueryParameter("translatedLanguage[]", ConstantValues.CHOSEN_LANGUAGE);
+        chapterBuilder.appendQueryParameter("translatedLanguage[]", sharedPreferences.getString(ConstantValues.CHOSEN_LANGUAGE, "en"));
         chapterBuilder.appendQueryParameter("offset", Integer.toString(currentChapters*ConstantValues.CHAPTER_NUMBER_LIMIT));
         String chapterUrl = chapterBuilder.build().toString();
 
@@ -358,7 +362,8 @@ public class MangaActivity extends AppCompatActivity implements View.OnClickList
                                 JSONObject chapter = data.getJSONObject(i);
                                 JSONObject attributes = chapter.getJSONObject("attributes");
 
-                                chapters.add(new String[]{chapter.getString("id"), attributes.getString("title")});
+                                chapters.add(new String[]{chapter.getString("id"), attributes.getString("title"), attributes.getString("chapter")});
+
                             }
 
                             adapter.notifyDataSetChanged();

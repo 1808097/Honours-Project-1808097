@@ -3,18 +3,14 @@ package com.example.honoursproject;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -23,12 +19,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.honoursproject.Data.ConstantValues;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Console;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -36,7 +32,6 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View.OnTouchListener;
 
 public class ReadingActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -50,10 +45,19 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
     private Intent launcher;
     private ImageView iv_page;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reading);
+
+        sharedPreferences = getSharedPreferences(ConstantValues.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+        if(sharedPreferences.getBoolean(ConstantValues.BUTTON_POSITION, true)){
+            setContentView(R.layout.activity_reading_bottom);
+        }
+        else{
+            setContentView(R.layout.activity_reading_top);
+        }
 
         currentPage = 0;
 
@@ -186,7 +190,7 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_reading);
+            setContentView(R.layout.activity_reading_bottom);
             //ImageView view = (ImageView) findViewById(R.id.iv_page);
             //view.setOnTouchListener(this);
         }

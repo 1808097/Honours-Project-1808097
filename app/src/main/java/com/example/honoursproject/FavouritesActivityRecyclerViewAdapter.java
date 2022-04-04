@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -22,9 +23,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.honoursproject.Data.ConstantValues;
 import com.example.honoursproject.Data.Manga;
 import com.example.honoursproject.Data.MangaDatabase;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,9 +72,7 @@ public class FavouritesActivityRecyclerViewAdapter extends RecyclerView.Adapter<
         TextView tv_artist = holder.itemView.findViewById(R.id.tv_artist);
         tv_artist.setText(manga.getArtist());
 
-        System.out.println("TESTING");
-        System.out.println(manga.getManga_id());
-        System.out.println(manga.getCover_id());
+        final TextView tv_chapter_warning = holder.itemView.findViewById(R.id.tv_chapter_warning);
 
         Button button = holder.itemView.findViewById(R.id.btn_select);
         button.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +125,42 @@ public class FavouritesActivityRecyclerViewAdapter extends RecyclerView.Adapter<
         }
 
         iv.setImageBitmap(bitmap);
+
+        Uri uri = Uri.parse("https://api.mangadex.org/chapter");
+        Uri.Builder chapterBuilder = uri.buildUpon();
+        chapterBuilder.appendQueryParameter("manga", manga.getManga_id());
+        chapterBuilder.appendQueryParameter("translatedLanguage[]", manga.getLanguage());
+        String chapterUrl = chapterBuilder.build().toString();
+
+        StringRequest chapterRequest = new StringRequest(Request.Method.GET, chapterUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            JSONArray data = json.getJSONArray("data");
+
+                            if(manga.getChapterNumber() < json.getInt("total")){
+                                tv_chapter_warning.setText("New chapters available!");
+                            };
+
+                        } catch (JSONException e) {
+                            Toast.makeText(context, "Error using API", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //toast in case API returns nothing. Recommends using another name to find plant
+                        Toast.makeText(context, "Something Went Wrong 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        //send request
+        RequestQueue queue = Volley.newRequestQueue(context);
+        queue.add(chapterRequest);
 
     }
 

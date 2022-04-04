@@ -58,6 +58,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     private ArrayList<String[]> mangas;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,7 +171,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
                                     JSONObject name = attributes.getJSONObject("name");
 
-                                    if(query.equals(name.getString(ConstantValues.CHOSEN_LANGUAGE).toLowerCase())){
+                                    if(query.equals(name.getString("en").toLowerCase())){
                                         genre_id = tag.getString("id");
                                     }
                                 }

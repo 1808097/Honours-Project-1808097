@@ -44,6 +44,27 @@
     <!--Settings Activity Values-->
     <string name="tv_settings_title">Settings</string>
     <string name="sw_darkmode">Dark mode</string>
+    <string name="tv_chapter_language">Select chapter Language:</string>
+    <string-array name="sp_chapter_language">
+        <item>English</item>
+        <item>Chinese</item>
+        <item>Croatian</item>
+        <item>French</item>
+        <item>German</item>
+        <item>Indonesian</item>
+        <item>Italian</item>
+        <item>Japanese</item>
+        <item>Korean</item>
+        <item>Polish</item>
+        <item>Portuguese</item>
+        <item>Russian</item>
+        <item>Turkish</item>
+    </string-array>
+    <string name="tv_chapter_buttons">Reading buttons position:</string>
+    <string-array name="sp_chapter_buttons">
+        <item>Bottom</item>
+        <item>Top</item>
+    </string-array>
 
 
 </resources>

@@ -13,6 +13,8 @@ public class Manga {
     private String artist_id;
     private String artist;
     private String cover_id;
+    private int chapterNumber;
+    private String language;
 
     @NonNull
     @PrimaryKey(autoGenerate = true)
@@ -73,4 +75,19 @@ public class Manga {
     public void setCover_id(String cover_id) {
         this.cover_id = cover_id;
     }
+
+    public int getChapterNumber() {
+        return chapterNumber;
+    }
+    public void setChapterNumber(int chapterNumber) {
+        this.chapterNumber = chapterNumber;
+    }
+
+    public String getLanguage(){
+        return language;
+    }
+    public void setLanguage(String language){
+        this.language = language;
+    }
+
 }
