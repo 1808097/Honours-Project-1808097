@@ -23,13 +23,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<SearchActivityRecyclerViewAdapter.SearchActivityViewHolder>{
 
@@ -40,10 +40,13 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
 
     private Bitmap bitmap;
 
-    public SearchActivityRecyclerViewAdapter(Context context, ArrayList<String[]> mangas) {
+    private ReentrantLock lock;
+
+    public SearchActivityRecyclerViewAdapter(Context context, ArrayList<String[]> mangas, ReentrantLock lock) {
         super();
         this.context = context;
         this.mangas = mangas;
+        this.lock=lock;
 
         adapter=this;
     }
@@ -58,6 +61,7 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
 
     @Override
     public void onBindViewHolder(@NonNull final SearchActivityRecyclerViewAdapter.SearchActivityViewHolder holder, final int position) {
+        lock.lock();
         TextView tv = holder.itemView.findViewById(R.id.tv_title);
         tv.setText(mangas.get(position)[1]);
 
@@ -78,6 +82,8 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                             final String coverFileName = attributes.getString("fileName");
 
                             final String url = "https://uploads.mangadex.org/covers/" + mangas.get(position)[0] + "/" + coverFileName;
+
+                            lock.unlock();
 
                             Thread thread = new Thread(new Runnable() {
                                 @Override
@@ -114,10 +120,10 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                             }
 
                             iv.setImageBitmap(bitmap);
-
                         } catch (JSONException e) {
                             Toast.makeText(context, "Error using API", Toast.LENGTH_LONG).show();
                             e.printStackTrace();
+                            lock.unlock();
                         }
                     }
                 },
@@ -125,6 +131,7 @@ public class SearchActivityRecyclerViewAdapter extends RecyclerView.Adapter<Sear
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Toast.makeText(context, "Something Went Wrong", Toast.LENGTH_LONG).show();
+                        lock.unlock();
                     }
                 });
 

@@ -164,6 +164,7 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
         iv_page.setImageBitmap(bitmap);
     }
 
+    //BELOW CLASS CODE TAKEN FROM USER "CHIRAG" ON STACK OVERFLOW
     class ZoomInZoomOut extends Activity implements View.OnTouchListener {
         private static final String TAG = "Touch";
         @SuppressWarnings("unused")

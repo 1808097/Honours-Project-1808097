@@ -18,9 +18,9 @@
         <item>Genre</item>
     </string-array>
 
-    <!--Manga Activity Values-->
-    <string name="btn_chapters_left">Prev</string>
-    <string name="btn_chapters_right">Next</string>
+    <!--Left Right Button Activity Values-->
+    <string name="btn_left">Prev</string>
+    <string name="btn_right">Next</string>
 
     <!--Recycler Activity View Values-->
     <string name="btn_chapter_recycler_button">Read</string>

@@ -8,26 +8,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -54,18 +45,27 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private String artist;
     private String cover_id;
 
+    private String genre_id;
+    private String author_id;
+
     private String query;
+    private String submittedQuery;
+
+    private int totalMangas;
+    private int currentMangas;
 
     private ArrayList<String[]> mangas;
 
     private SharedPreferences sharedPreferences;
+
+    private ReentrantLock lock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(ConstantValues.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(ConstantValues.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = sharedPreferences.edit();
         if(!sharedPreferences.getBoolean(ConstantValues.DARKMODE, true)){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -74,6 +74,11 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         sv_search = (SearchView)findViewById(R.id.sv_search);
         sv_search.setOnQueryTextListener(this);
 
+        lock = new ReentrantLock(true);
+
+        currentMangas = 0;
+
+        submittedQuery = "";
         query = "title";
 
         sp_search_setting = (Spinner)findViewById(R.id.sp_search_setting);
@@ -130,10 +135,62 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             }
         });
 
+        Button btn_chapters_left = (Button)findViewById(R.id.btn_mangas_left);
+        btn_chapters_left.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(submittedQuery.equals("")){
+                    Toast.makeText(getApplicationContext(), "Search a manga first", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    if(currentMangas==0){
+                        //Do nothing
+                    }
+                    else{
+                        currentMangas--;
+                        if(sp_search_setting.getSelectedItemPosition() == 0){
+                            searchMangas(submittedQuery);
+                        }
+                        else if(sp_search_setting.getSelectedItemPosition() == 3){
+                            searchMangas(genre_id);
+                        }
+                        else{
+                            searchMangas(author_id);
+                        }
+                    }
+                }
+            }
+        });
+
+        Button btn_chapters_right = (Button)findViewById(R.id.btn_mangas_right);
+        btn_chapters_right.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(submittedQuery.equals("")){
+                    Toast.makeText(getApplicationContext(), "Search a manga first", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    if ((currentMangas + 1) * ConstantValues.CHAPTER_NUMBER_LIMIT >= totalMangas) {
+                        //Do nothing
+                    }
+                    else{
+                        currentMangas++;
+                        if (sp_search_setting.getSelectedItemPosition() == 0) {
+                            searchMangas(submittedQuery);
+                        } else if (sp_search_setting.getSelectedItemPosition() == 3) {
+                            searchMangas(genre_id);
+                        } else {
+                            searchMangas(author_id);
+                        }
+                    }
+                }
+            }
+        });
+
         mangas = new ArrayList<>();
 
         RecyclerView rv = findViewById(R.id.rv_manga_list);
-        adapter = new SearchActivityRecyclerViewAdapter(getApplicationContext(), mangas);
+        adapter = new SearchActivityRecyclerViewAdapter(getApplicationContext(), mangas, lock);
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
@@ -145,6 +202,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     public boolean onQueryTextSubmit(final String query){
+        submittedQuery = query;
         if (sp_search_setting.getSelectedItemPosition() == 0) {
             searchMangas(query);
 
@@ -162,7 +220,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                                 JSONObject json = new JSONObject(response);
                                 JSONArray data = json.getJSONArray("data");
 
-                                String genre_id = "";
+                                genre_id = "";
 
                                 for (int i = 0; i < data.length(); i++) {
                                     JSONObject tag = data.getJSONObject(i);
@@ -216,7 +274,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                                 JSONObject json = new JSONObject(response);
                                 JSONArray data = json.getJSONArray("data");
 
-                                String author_id = "";
+                                author_id = "";
 
                                 for (int i = 0; i < data.length(); i++) {
                                     JSONObject tag = data.getJSONObject(i);
@@ -262,11 +320,12 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     public void searchMangas(String query){
-        mangas.clear();
+        lock.lock();
 
         Uri uri = Uri.parse("https://api.mangadex.org/manga");
         Uri.Builder builder = uri.buildUpon();
         builder.appendQueryParameter(this.query, query);
+        builder.appendQueryParameter("offset", Integer.toString(currentMangas*ConstantValues.CHAPTER_NUMBER_LIMIT));
         String url = builder.build().toString();
 
         StringRequest mangaRequest = new StringRequest(Request.Method.GET, url,
@@ -275,8 +334,11 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     public void onResponse(String response) {
                         try {
                             JSONObject json = new JSONObject(response);
+                            totalMangas = json.getInt("total");
+
                             JSONArray data = json.getJSONArray("data");
 
+                            mangas.clear();
                             for(int i=0; i < data.length(); i++){
                                 JSONObject manga = data.getJSONObject(i);
 
@@ -306,10 +368,12 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                                 mangas.add(new String[]{manga_id, title, author, artist, cover_id});
                             }
                             adapter.notifyDataSetChanged();
+                            lock.unlock();
 
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "Error using API", Toast.LENGTH_LONG).show();
                             e.printStackTrace();
+                            lock.unlock();
                         }
                     }
                 },
@@ -318,6 +382,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     public void onErrorResponse(VolleyError error) {
                         //toast in case API returns nothing. Recommends using another name to find plant
                         Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
+                        lock.unlock();
                     }
                 });
 
