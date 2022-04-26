@@ -114,7 +114,15 @@ public class ReadingActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.btn_goto_left_page) {
+        int id = 0;
+        if(sharedPreferences.getBoolean(ConstantValues.READING_ORDER, true)){
+            id = R.id.btn_goto_left_page;
+        }
+        else{
+            id = R.id.btn_goto_right_page;
+        }
+
+        if (v.getId() == id) {
             if (currentPage == 0) {
                 //Do nothing
             } else {

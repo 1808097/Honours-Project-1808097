@@ -156,7 +156,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         Spinner sp_chapter_buttons = (Spinner)findViewById(R.id.sp_chapter_buttons);
-        if(!sharedPreferences.getBoolean(ConstantValues.BUTTON_POSITION, true)){
+        if(!sharedPreferences.getBoolean(ConstantValues.BUTTON_POSITION, false)){
             sp_chapter_buttons.setSelection(1);
         }
         sp_chapter_buttons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -176,6 +176,29 @@ public class SettingsActivity extends AppCompatActivity {
                 public void onNothingSelected(AdapterView<?> parent) {
                     //empty
                 }
+        });
+
+        Spinner sp_reading_order = (Spinner)findViewById(R.id.sp_reading_order);
+        if(!sharedPreferences.getBoolean(ConstantValues.READING_ORDER, false)){
+            sp_reading_order.setSelection(1);
+        }
+        sp_reading_order.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    prefEditor.putBoolean(ConstantValues.READING_ORDER, true);
+                    prefEditor.apply();
+                }
+                else{
+                    prefEditor.putBoolean(ConstantValues.READING_ORDER, false);
+                    prefEditor.apply();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //empty
+            }
         });
 
 

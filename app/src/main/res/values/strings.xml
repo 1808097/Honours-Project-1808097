@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Honours Project</string>
+    <string name="app_name">Manga Room</string>
 
     <string name="title_activity_reading">ReadingActivity</string>
 
@@ -65,6 +65,9 @@
         <item>Bottom</item>
         <item>Top</item>
     </string-array>
-
-
+    <string name="tv_reading_order">Reading order:</string>
+    <string-array name="sp_reading_order">
+        <item>Left-to-Right</item>
+        <item>Right-to-Left</item>
+    </string-array>
 </resources>

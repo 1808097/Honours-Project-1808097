@@ -32,22 +32,28 @@
 
         <TextView
             android:id="@+id/tv_author"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_author_const"
+            app:layout_constraintEnd_toStartOf="@+id/tv_artist_const"
             app:layout_constraintStart_toEndOf="@+id/tv_author_const"
             app:layout_constraintTop_toTopOf="@+id/tv_author_const"
             tools:text="author" />
 
         <TextView
             android:id="@+id/tv_artist"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_artist_const"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_artist_const"
             app:layout_constraintTop_toTopOf="@+id/tv_artist_const"
             tools:text="artist" />
@@ -137,8 +143,8 @@
             android:id="@+id/tv_author_const"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginLeft="32dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/tv_author_const"
             app:layout_constraintStart_toStartOf="parent"

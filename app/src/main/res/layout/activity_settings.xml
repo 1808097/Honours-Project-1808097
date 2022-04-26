@@ -98,10 +98,28 @@
         android:id="@+id/sp_chapter_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:entries="@array/sp_chapter_buttons"
         app:layout_constraintBottom_toBottomOf="@+id/tv_chapter_buttons"
-        app:layout_constraintStart_toEndOf="@+id/tv_chapter_buttons"
+        app:layout_constraintStart_toStartOf="@+id/sp_chapter_language"
         app:layout_constraintTop_toTopOf="@+id/tv_chapter_buttons" />
+
+    <TextView
+        android:id="@+id/tv_reading_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/tv_reading_order"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_chapter_buttons" />
+
+    <Spinner
+        android:id="@+id/sp_reading_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:entries="@array/sp_reading_order"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_reading_order"
+        app:layout_constraintStart_toStartOf="@+id/sp_chapter_buttons"
+        app:layout_constraintTop_toTopOf="@+id/tv_reading_order" />
 </androidx.constraintlayout.widget.ConstraintLayout>
