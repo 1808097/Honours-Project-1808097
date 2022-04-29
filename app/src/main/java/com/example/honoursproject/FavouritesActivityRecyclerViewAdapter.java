@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -23,7 +22,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.honoursproject.Data.ConstantValues;
 import com.example.honoursproject.Data.Manga;
 import com.example.honoursproject.Data.MangaDatabase;
 
@@ -33,7 +31,6 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class FavouritesActivityRecyclerViewAdapter extends RecyclerView.Adapter<FavouritesActivityRecyclerViewAdapter.FavouritesActivityViewHolder>{
 

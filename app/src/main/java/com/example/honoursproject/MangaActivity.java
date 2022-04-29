@@ -3,7 +3,6 @@ package com.example.honoursproject;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Database;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

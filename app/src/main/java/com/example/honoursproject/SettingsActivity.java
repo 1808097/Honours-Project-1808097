@@ -2,31 +2,18 @@ package com.example.honoursproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 
 import com.example.honoursproject.Data.ConstantValues;
-import com.example.honoursproject.Data.Manga;
-
-import java.util.List;
-
-import static android.content.res.Configuration.UI_MODE_NIGHT_MASK;
 
 public class SettingsActivity extends AppCompatActivity {
 
